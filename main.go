@@ -9,7 +9,13 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
+
+	"github.com/MayangAsura/thullab-evaluation/internal/database"
 )
+
+type apiConfig struct {
+	DB *database.Queries
+}
 
 func main(){
 
@@ -22,6 +28,22 @@ func main(){
 	if portString == "" {
 		log.Fatal("Port not found in the enviroment")
 
+	}
+
+	dbURL := os.Getenv("DB_URL")
+
+	if dbURL != nil {
+		log.Fatal("DB_URL not found in the environment")
+	}
+
+	conn, err := sql.Open("postgres", dbUrl)
+
+	if err != nil {
+		log.Fatal("Cannot connect to database:", err)
+	}
+
+	apiCnfg := apiConfig{
+		DB: database.New(conn),
 	}
 
 	router := chi.NewRouter()
@@ -39,6 +61,7 @@ func main(){
 
 	v1Router.Get("/healthz", handlerReadiness)
 	v1Router.Get("/err", handlerErr)
+	v1Router.Post("/users", apiCnfg.handlerCreateUsers)
 	// v1Router.HandleFunc("/healthz", handlerReadiness)
 
 	router.Mount("/v1", v1Router)
