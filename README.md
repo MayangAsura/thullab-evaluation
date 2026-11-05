@@ -7,7 +7,7 @@
 ![PostgreSQL](https://img.shields.io/badge/Supabase-3ECF8E?logo=postgresql&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-38B2AC?logo=tailwindcss&logoColor=white)
 
-Thullab Evaluation is an exam and evaluation system for online class platform that used non-profit organization or foundation to manage online class and students who want to learn Islam in well structured.
+Thullab Evaluation is an exam and evaluation system for online class platform that used for non-profit organization or foundation to manage online class and students who want to learn Islam in well structured.
 
 ---
 
