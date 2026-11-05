@@ -5,14 +5,217 @@
 package database
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
 )
 
-type User struct {
+type Class struct {
+	ID           uuid.UUID
+	Name         string
+	Level        string
+	CategoryID   uuid.UUID
+	Image        string
+	LearningHour interface{}
+	CreatedAt    sql.NullTime
+	CreatedBy    uuid.UUID
+	UpdatedAt    sql.NullTime
+	UpdatedBy    uuid.NullUUID
+	DeletedAt    sql.NullTime
+	DeletedBy    uuid.NullUUID
+}
+
+type ClassSkill struct {
+	ID      uuid.UUID
+	ClassID uuid.UUID
+	SkillID uuid.UUID
+	Point   int64
+}
+
+type File struct {
 	ID        uuid.UUID
-	CreatedAt time.Time
-	UpdatedAt time.Time
 	Name      string
+	FileType  string
+	FileUrl   string
+	Size      interface{}
+	CreatedAt time.Time
+	CreatedBy uuid.UUID
+	UpdatedAt sql.NullTime
+	UpdatedBy uuid.NullUUID
+	DeletedAt sql.NullTime
+	DeletedBy uuid.NullUUID
+}
+
+type LearningAnswer struct {
+	ID         uuid.UUID
+	QuestionID uuid.UUID
+	Option     string
+	Point      int64
+}
+
+type LearningClass struct {
+	ID         uuid.UUID
+	LearningID uuid.UUID
+	ClassID    uuid.UUID
+	CreatedAt  time.Time
+	UpdatedAt  sql.NullTime
+	DeletedAt  sql.NullTime
+	CreatedBy  uuid.UUID
+	UpdatedBy  uuid.NullUUID
+	DeletedBy  uuid.NullUUID
+}
+
+type LearningContent struct {
+	ID                uuid.UUID
+	Name              string
+	ContentType       string
+	Level             string
+	LearningHour      int64
+	Duration          int64
+	NumQuestions      int64
+	IsRandomQuestions bool
+	IsRandomAnswers   bool
+	QuestionTypes     string
+	Status            string
+	CreatedAt         time.Time
+	UpdatedAt         sql.NullTime
+	DeletedAt         sql.NullTime
+	CreatedBy         uuid.NullUUID
+	UpdatedBy         uuid.NullUUID
+	DeletedBy         uuid.NullUUID
+	MaxPoints         sql.NullInt64
+}
+
+type LearningContentSkill struct {
+	ID                uuid.UUID
+	ClassID           uuid.UUID
+	LearningContentID uuid.UUID
+	SkillID           uuid.UUID
+	CreatedAt         sql.NullTime
+	CreatedBy         uuid.NullUUID
+	UpdatedAt         sql.NullTime
+	UpdatedBy         uuid.NullUUID
+	DeletedAt         sql.NullTime
+	DeletedBy         uuid.NullUUID
+}
+
+type LearningOption struct {
+	ID         uuid.UUID
+	Option     string
+	Point      interface{}
+	CreatedAt  sql.NullTime
+	UpdatedAt  sql.NullTime
+	DeletedAt  sql.NullTime
+	CreatedBy  uuid.NullUUID
+	DeletedBy  uuid.NullUUID
+	UpdatedBy  uuid.NullUUID
+	QuestionID uuid.UUID
+}
+
+type LearningQuestion struct {
+	ID            uuid.UUID
+	ClassID       uuid.UUID
+	LearningID    uuid.UUID
+	QuestionOrder interface{}
+	Question      string
+	QuestionType  string
+	Answer        string
+	Score         interface{}
+	CreatedAt     time.Time
+	UpdatedAt     sql.NullTime
+	DeletedAt     sql.NullTime
+	CreatedBy     uuid.NullUUID
+	UpdatedBy     uuid.NullUUID
+	DeletedBy     uuid.NullUUID
+}
+
+type LearningResponse struct {
+	ID         uuid.UUID
+	LearningID uuid.UUID
+	ClassID    uuid.UUID
+	UserID     uuid.UUID
+	TotalPoint interface{}
+	FinishedAt sql.NullTime
+	UpdatedAt  sql.NullTime
+}
+
+type LearningResponseDetail struct {
+	ID         uuid.UUID
+	LearningID uuid.UUID
+	ClassID    uuid.UUID
+	UserID     uuid.UUID
+	ResponseID uuid.UUID
+	QuestionID uuid.UUID
+	Answer     string
+	Point      interface{}
+}
+
+type Registrant struct {
+	ID          uuid.UUID
+	Name        string
+	PhoneNumber string
+	Email       string
+	Address     string
+	CreatedAt   time.Time
+	UpdatedAt   sql.NullTime
+	DeletedAt   sql.NullTime
+	Password    string
+}
+
+type Skill struct {
+	ID        uuid.UUID
+	Name      string
+	CreatedAt time.Time
+	CreatedBy uuid.UUID
+	DeletedAt sql.NullTime
+}
+
+type SpeakerClass struct {
+	ID        uuid.UUID
+	ClassID   uuid.UUID
+	UserID    uuid.UUID
+	CreatedBy uuid.UUID
+}
+
+type StudentAchievement struct {
+	ID      uuid.UUID
+	UserID  uuid.UUID
+	ClassID uuid.UUID
+	SkillID uuid.UUID
+	Point   int64
+}
+
+type StudentCertificate struct {
+	ID      uuid.UUID
+	Name    string
+	FileID  uuid.UUID
+	UserID  uuid.UUID
+	ClassID uuid.UUID
+}
+
+type StudentClass struct {
+	UserID           uuid.UUID
+	ClassID          uuid.UUID
+	LearningStatus   string
+	LearningProgress int64
+	CreatedAt        time.Time
+	CreatedBy        uuid.UUID
+	UpdatedAt        time.Time
+	UpdatedBy        uuid.UUID
+	DeletedAt        time.Time
+	DeletedBy        uuid.UUID
+}
+
+type User struct {
+	ID           uuid.UUID
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+	Name         string
+	UserType     string
+	ApiKey       string
+	PhoneNumber  string
+	CreatedBy    uuid.UUID
+	Password     string
+	RegistrantID uuid.UUID
 }

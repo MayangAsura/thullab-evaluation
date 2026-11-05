@@ -7,6 +7,7 @@ package database
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -14,17 +15,24 @@ import (
 
 const createUser = `-- name: CreateUser :one
 
-INSERT INTO users (id, created_at, updated_at, name)
-VALUES ($1, $2, $3, $4)
+INSERT INTO users (id, created_at, updated_at, created_by, name, phone_number, password, user_type, api_key, registrant_id)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9,
+        encode(sha256(random()::text::bytea), 'hex')
+        )
 
-RETURNING id, created_at, updated_at, name
+RETURNING id, created_at, updated_at, name, user_type, api_key, phone_number, created_by, password, registrant_id
 `
 
 type CreateUserParams struct {
-	ID        uuid.UUID
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	Name      string
+	ID          uuid.UUID
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	CreatedBy   uuid.UUID
+	Name        string
+	PhoneNumber string
+	Password    string
+	UserType    string
+	ApiKey      string
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -32,7 +40,12 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.ID,
 		arg.CreatedAt,
 		arg.UpdatedAt,
+		arg.CreatedBy,
 		arg.Name,
+		arg.PhoneNumber,
+		arg.Password,
+		arg.UserType,
+		arg.ApiKey,
 	)
 	var i User
 	err := row.Scan(
@@ -40,6 +53,123 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Name,
+		&i.UserType,
+		&i.ApiKey,
+		&i.PhoneNumber,
+		&i.CreatedBy,
+		&i.Password,
+		&i.RegistrantID,
 	)
 	return i, err
+}
+
+const getStudents = `-- name: GetStudents :many
+
+SELECT u.id, u.name, u.phone_number, u.created_at, u.updated_at, u.created_by, rg.address FROM users u
+        LEFT JOIN registrants rg ON rg.id = u.registrant_id
+        WHERE u.deleted_at is null AND u.user_type = 'student' AND rg.deleted_at is null
+`
+
+type GetStudentsRow struct {
+	ID          uuid.UUID
+	Name        string
+	PhoneNumber string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	CreatedBy   uuid.UUID
+	Address     sql.NullString
+}
+
+func (q *Queries) GetStudents(ctx context.Context) ([]GetStudentsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getStudents)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetStudentsRow
+	for rows.Next() {
+		var i GetStudentsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.PhoneNumber,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.CreatedBy,
+			&i.Address,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getUserApiKey = `-- name: GetUserApiKey :one
+SELECT id, created_at, updated_at, name, user_type, api_key, phone_number, created_by, password, registrant_id FROM users WHERE api_key = $1
+`
+
+func (q *Queries) GetUserApiKey(ctx context.Context, apiKey string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserApiKey, apiKey)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Name,
+		&i.UserType,
+		&i.ApiKey,
+		&i.PhoneNumber,
+		&i.CreatedBy,
+		&i.Password,
+		&i.RegistrantID,
+	)
+	return i, err
+}
+
+const getUserByUsername = `-- name: GetUserByUsername :one
+
+SELECT id, created_at, updated_at, name, user_type, api_key, phone_number, created_by, password, registrant_id FROM users
+        WHERE deleted_at is null AND phone_number = $1
+`
+
+func (q *Queries) GetUserByUsername(ctx context.Context, phoneNumber string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByUsername, phoneNumber)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Name,
+		&i.UserType,
+		&i.ApiKey,
+		&i.PhoneNumber,
+		&i.CreatedBy,
+		&i.Password,
+		&i.RegistrantID,
+	)
+	return i, err
+}
+
+const updateUserPassword = `-- name: UpdateUserPassword :exec
+
+UPDATE users SET password = $2, updated_at = $3
+        WHERE phone_number = $1 AND deleted_at is null
+`
+
+type UpdateUserPasswordParams struct {
+	PhoneNumber string
+	Password    string
+	UpdatedAt   time.Time
+}
+
+func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) error {
+	_, err := q.db.ExecContext(ctx, updateUserPassword, arg.PhoneNumber, arg.Password, arg.UpdatedAt)
+	return err
 }
