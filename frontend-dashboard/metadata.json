@@ -1,0 +1,6 @@
+{
+  "name": "Learning Product Manager",
+  "description": "Create, edit, and view details of learning products with custom levels, categories, learning hours, and authors.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
