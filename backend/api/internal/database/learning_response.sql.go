@@ -32,14 +32,14 @@ const createLearningResponse = `-- name: CreateLearningResponse :one
 INSERT INTO learning_responses (class_id, user_id, learning_id, total_point, finished_at)
       VALUES ($1, $2, $3, $4, $5)
 
-RETURNING id, learning_id, class_id, user_id, total_point, finished_at, updated_at
+RETURNING id, learning_id, class_id, user_id, total_point, finished_at, created_at, created_by, updated_at, updated_by, deleted_at, deleted_by
 `
 
 type CreateLearningResponseParams struct {
 	ClassID    uuid.UUID
 	UserID     uuid.UUID
 	LearningID uuid.UUID
-	TotalPoint interface{}
+	TotalPoint sql.NullInt64
 	FinishedAt sql.NullTime
 }
 
@@ -59,14 +59,19 @@ func (q *Queries) CreateLearningResponse(ctx context.Context, arg CreateLearning
 		&i.UserID,
 		&i.TotalPoint,
 		&i.FinishedAt,
+		&i.CreatedAt,
+		&i.CreatedBy,
 		&i.UpdatedAt,
+		&i.UpdatedBy,
+		&i.DeletedAt,
+		&i.DeletedBy,
 	)
 	return i, err
 }
 
 const getLearningResponseByUserIDAndLearningID = `-- name: GetLearningResponseByUserIDAndLearningID :one
 
-SELECT id, learning_id, class_id, user_id, total_point, finished_at, updated_at FROM learning_responses
+SELECT id, learning_id, class_id, user_id, total_point, finished_at, created_at, created_by, updated_at, updated_by, deleted_at, deleted_by FROM learning_responses
       WHERE user_id = $1 AND learning_id = $2 AND deleted_at is null
 `
 
@@ -85,7 +90,12 @@ func (q *Queries) GetLearningResponseByUserIDAndLearningID(ctx context.Context, 
 		&i.UserID,
 		&i.TotalPoint,
 		&i.FinishedAt,
+		&i.CreatedAt,
+		&i.CreatedBy,
 		&i.UpdatedAt,
+		&i.UpdatedBy,
+		&i.DeletedAt,
+		&i.DeletedBy,
 	)
 	return i, err
 }
@@ -110,14 +120,14 @@ const startLearningContentResponse = `-- name: StartLearningContentResponse :man
 INSERT INTO learning_responses (class_id, user_id, learning_id, total_point)
       VALUES ($1, $2, $3, $4)
 
-RETURNING id, learning_id, class_id, user_id, total_point, finished_at, updated_at
+RETURNING id, learning_id, class_id, user_id, total_point, finished_at, created_at, created_by, updated_at, updated_by, deleted_at, deleted_by
 `
 
 type StartLearningContentResponseParams struct {
 	ClassID    uuid.UUID
 	UserID     uuid.UUID
 	LearningID uuid.UUID
-	TotalPoint interface{}
+	TotalPoint sql.NullInt64
 }
 
 func (q *Queries) StartLearningContentResponse(ctx context.Context, arg StartLearningContentResponseParams) ([]LearningResponse, error) {
@@ -141,7 +151,12 @@ func (q *Queries) StartLearningContentResponse(ctx context.Context, arg StartLea
 			&i.UserID,
 			&i.TotalPoint,
 			&i.FinishedAt,
+			&i.CreatedAt,
+			&i.CreatedBy,
 			&i.UpdatedAt,
+			&i.UpdatedBy,
+			&i.DeletedAt,
+			&i.DeletedBy,
 		); err != nil {
 			return nil, err
 		}
@@ -163,7 +178,7 @@ UPDATE learning_responses SET total_point = $1, finished_at = $2, updated_at = $
 `
 
 type UpdateLearningResponseParams struct {
-	TotalPoint interface{}
+	TotalPoint sql.NullInt64
 	FinishedAt sql.NullTime
 	UpdatedAt  sql.NullTime
 	ID         uuid.UUID

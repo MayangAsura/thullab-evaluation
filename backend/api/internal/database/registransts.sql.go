@@ -18,9 +18,9 @@ INSERT INTO registrants (
   address,
   password
 )
-VALUES ( $1, $2, $3, $4, $5)
+VALUES ( $1, $2, $3, $4, $5 )
 
-RETURNING id, name, phone_number, email, address, created_at, updated_at, deleted_at, password
+RETURNING id, name, phone_number, email, address, created_at, created_by, updated_at, updated_by, deleted_at, deleted_by, password
 `
 
 type CreateRegistrantParams struct {
@@ -47,8 +47,11 @@ func (q *Queries) CreateRegistrant(ctx context.Context, arg CreateRegistrantPara
 		&i.Email,
 		&i.Address,
 		&i.CreatedAt,
+		&i.CreatedBy,
 		&i.UpdatedAt,
+		&i.UpdatedBy,
 		&i.DeletedAt,
+		&i.DeletedBy,
 		&i.Password,
 	)
 	return i, err
@@ -56,7 +59,7 @@ func (q *Queries) CreateRegistrant(ctx context.Context, arg CreateRegistrantPara
 
 const getRegistrants = `-- name: GetRegistrants :many
 
-SELECT id, name, phone_number, email, address, created_at, updated_at, deleted_at, password FROM registrants
+SELECT id, name, phone_number, email, address, created_at, created_by, updated_at, updated_by, deleted_at, deleted_by, password FROM registrants
   WHERE deleted_at is null
 `
 
@@ -76,8 +79,11 @@ func (q *Queries) GetRegistrants(ctx context.Context) ([]Registrant, error) {
 			&i.Email,
 			&i.Address,
 			&i.CreatedAt,
+			&i.CreatedBy,
 			&i.UpdatedAt,
+			&i.UpdatedBy,
 			&i.DeletedAt,
+			&i.DeletedBy,
 			&i.Password,
 		); err != nil {
 			return nil, err

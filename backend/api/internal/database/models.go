@@ -11,13 +11,26 @@ import (
 	"github.com/google/uuid"
 )
 
+type Category struct {
+	ID          uuid.UUID
+	Name        string
+	ParentID    uuid.NullUUID
+	Description sql.NullString
+	CreatedAt   time.Time
+	CreatedBy   uuid.NullUUID
+	UpdatedAt   sql.NullTime
+	UpdatedBy   uuid.NullUUID
+	DeletedAt   sql.NullTime
+	DeletedBy   uuid.NullUUID
+}
+
 type Class struct {
 	ID           uuid.UUID
 	Name         string
 	Level        string
 	CategoryID   uuid.UUID
 	Image        string
-	LearningHour interface{}
+	LearningHour int64
 	CreatedAt    sql.NullTime
 	CreatedBy    uuid.UUID
 	UpdatedAt    sql.NullTime
@@ -27,10 +40,16 @@ type Class struct {
 }
 
 type ClassSkill struct {
-	ID      uuid.UUID
-	ClassID uuid.UUID
-	SkillID uuid.UUID
-	Point   int64
+	ID        uuid.UUID
+	ClassID   uuid.UUID
+	SkillID   uuid.UUID
+	Point     int64
+	CreatedAt sql.NullTime
+	CreatedBy uuid.UUID
+	UpdatedAt sql.NullTime
+	UpdatedBy uuid.NullUUID
+	DeletedAt sql.NullTime
+	DeletedBy uuid.NullUUID
 }
 
 type File struct {
@@ -38,7 +57,7 @@ type File struct {
 	Name      string
 	FileType  string
 	FileUrl   string
-	Size      interface{}
+	Size      int64
 	CreatedAt time.Time
 	CreatedBy uuid.UUID
 	UpdatedAt sql.NullTime
@@ -52,17 +71,23 @@ type LearningAnswer struct {
 	QuestionID uuid.UUID
 	Option     string
 	Point      int64
+	CreatedAt  sql.NullTime
+	CreatedBy  uuid.UUID
+	UpdatedAt  sql.NullTime
+	UpdatedBy  uuid.NullUUID
+	DeletedAt  sql.NullTime
+	DeletedBy  uuid.NullUUID
 }
 
 type LearningClass struct {
 	ID         uuid.UUID
 	LearningID uuid.UUID
 	ClassID    uuid.UUID
-	CreatedAt  time.Time
-	UpdatedAt  sql.NullTime
-	DeletedAt  sql.NullTime
+	CreatedAt  sql.NullTime
 	CreatedBy  uuid.UUID
+	UpdatedAt  sql.NullTime
 	UpdatedBy  uuid.NullUUID
+	DeletedAt  sql.NullTime
 	DeletedBy  uuid.NullUUID
 }
 
@@ -103,7 +128,7 @@ type LearningContentSkill struct {
 type LearningOption struct {
 	ID         uuid.UUID
 	Option     string
-	Point      interface{}
+	Point      sql.NullInt64
 	CreatedAt  sql.NullTime
 	UpdatedAt  sql.NullTime
 	DeletedAt  sql.NullTime
@@ -117,11 +142,11 @@ type LearningQuestion struct {
 	ID            uuid.UUID
 	ClassID       uuid.UUID
 	LearningID    uuid.UUID
-	QuestionOrder interface{}
+	QuestionOrder int64
 	Question      string
 	QuestionType  string
 	Answer        string
-	Score         interface{}
+	Score         int64
 	CreatedAt     time.Time
 	UpdatedAt     sql.NullTime
 	DeletedAt     sql.NullTime
@@ -135,9 +160,14 @@ type LearningResponse struct {
 	LearningID uuid.UUID
 	ClassID    uuid.UUID
 	UserID     uuid.UUID
-	TotalPoint interface{}
+	TotalPoint sql.NullInt64
 	FinishedAt sql.NullTime
+	CreatedAt  sql.NullTime
+	CreatedBy  uuid.UUID
 	UpdatedAt  sql.NullTime
+	UpdatedBy  uuid.NullUUID
+	DeletedAt  sql.NullTime
+	DeletedBy  uuid.NullUUID
 }
 
 type LearningResponseDetail struct {
@@ -148,7 +178,13 @@ type LearningResponseDetail struct {
 	ResponseID uuid.UUID
 	QuestionID uuid.UUID
 	Answer     string
-	Point      interface{}
+	Point      int64
+	CreatedAt  sql.NullTime
+	CreatedBy  uuid.UUID
+	UpdatedAt  sql.NullTime
+	UpdatedBy  uuid.NullUUID
+	DeletedAt  sql.NullTime
+	DeletedBy  uuid.NullUUID
 }
 
 type Registrant struct {
@@ -157,9 +193,12 @@ type Registrant struct {
 	PhoneNumber string
 	Email       string
 	Address     string
-	CreatedAt   time.Time
+	CreatedAt   sql.NullTime
+	CreatedBy   uuid.NullUUID
 	UpdatedAt   sql.NullTime
+	UpdatedBy   uuid.NullUUID
 	DeletedAt   sql.NullTime
+	DeletedBy   uuid.NullUUID
 	Password    string
 }
 
@@ -168,30 +207,50 @@ type Skill struct {
 	Name      string
 	CreatedAt time.Time
 	CreatedBy uuid.UUID
+	UpdatedAt sql.NullTime
+	UpdateBy  uuid.NullUUID
 	DeletedAt sql.NullTime
+	DeletedBy uuid.NullUUID
 }
 
 type SpeakerClass struct {
 	ID        uuid.UUID
 	ClassID   uuid.UUID
 	UserID    uuid.UUID
+	CreatedAt sql.NullTime
 	CreatedBy uuid.UUID
+	UpdatedAt sql.NullTime
+	UpdatedBy uuid.NullUUID
+	DeletedAt sql.NullTime
+	DeletedBy uuid.NullUUID
 }
 
 type StudentAchievement struct {
-	ID      uuid.UUID
-	UserID  uuid.UUID
-	ClassID uuid.UUID
-	SkillID uuid.UUID
-	Point   int64
+	ID        uuid.UUID
+	UserID    uuid.UUID
+	ClassID   uuid.UUID
+	SkillID   uuid.UUID
+	Point     int64
+	CreatedAt sql.NullTime
+	CreatedBy uuid.UUID
+	UpdatedAt sql.NullTime
+	UpdatedBy uuid.NullUUID
+	DeletedAt sql.NullTime
+	DeletedBy uuid.NullUUID
 }
 
 type StudentCertificate struct {
-	ID      uuid.UUID
-	Name    string
-	FileID  uuid.UUID
-	UserID  uuid.UUID
-	ClassID uuid.UUID
+	ID        uuid.UUID
+	Name      string
+	FileID    uuid.UUID
+	UserID    uuid.UUID
+	ClassID   uuid.UUID
+	CreatedAt sql.NullTime
+	CreatedBy uuid.UUID
+	UpdatedAt sql.NullTime
+	UpdatedBy uuid.NullUUID
+	DeletedAt sql.NullTime
+	DeletedBy uuid.NullUUID
 }
 
 type StudentClass struct {
@@ -209,15 +268,18 @@ type StudentClass struct {
 
 type User struct {
 	ID           uuid.UUID
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
 	Name         string
-	UserType     string
-	ApiKey       string
-	PhoneNumber  string
-	CreatedBy    uuid.UUID
-	Password     string
-	RegistrantID uuid.UUID
 	Email        string
+	PhoneNumber  string
+	Password     string
 	Address      sql.NullString
+	ApiKey       string
+	CreatedAt    sql.NullTime
+	CreatedBy    uuid.UUID
+	UpdatedAt    sql.NullTime
+	UpdatedBy    uuid.NullUUID
+	DeletedAt    sql.NullTime
+	DeletedBy    uuid.NullUUID
+	UserType     sql.NullString
+	RegistrantID uuid.UUID
 }

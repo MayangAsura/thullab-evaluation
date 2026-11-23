@@ -16,7 +16,7 @@ const createLearningAnswer = `-- name: CreateLearningAnswer :one
 INSERT INTO learning_answers (question_id, option, point)
         VALUES ($1, $2, $3)
 
-RETURNING id, question_id, option, point
+RETURNING id, question_id, option, point, created_at, created_by, updated_at, updated_by, deleted_at, deleted_by
 `
 
 type CreateLearningAnswerParams struct {
@@ -33,6 +33,12 @@ func (q *Queries) CreateLearningAnswer(ctx context.Context, arg CreateLearningAn
 		&i.QuestionID,
 		&i.Option,
 		&i.Point,
+		&i.CreatedAt,
+		&i.CreatedBy,
+		&i.UpdatedAt,
+		&i.UpdatedBy,
+		&i.DeletedAt,
+		&i.DeletedBy,
 	)
 	return i, err
 }

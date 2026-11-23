@@ -1,7 +1,6 @@
 package main
 
 import (
-	"time"
 
 	"github.com/google/uuid"
 
@@ -12,8 +11,8 @@ import (
 
 type User struct {
 	ID        uuid.UUID `json:"id"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt sql.NullTime `json:"created_at"`
+	UpdatedAt sql.NullTime `json:"updated_at"`
 	Name      string    `json:"name"`
 	APIKey    string    `json:"api_key"`
 }
@@ -21,8 +20,8 @@ type User struct {
 type Student struct {
 	ID          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	CreatedAt   sql.NullTime `json:"created_at"`
+	UpdatedAt   sql.NullTime `json:"updated_at"`
 	PhoneNumber string    `json:"phone_number"`
 	Email       string    `json:"email"`
 	Address     sql.NullString   `json:"address"`
@@ -122,7 +121,7 @@ type Registrant struct {
 	Name        string    `json:"name"`
 	PhoneNumber string    `json:"phone_number"`
 	Email       string    `json:"email"`
-	CreatedAt   time.Time `json:"created_at"`
+	CreatedAt   sql.NullTime `json:"created_at"`
 	Address     string    `json:"address"`
 	Job         string    `json:"job"`
 }

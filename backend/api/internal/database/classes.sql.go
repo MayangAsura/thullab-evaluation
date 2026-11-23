@@ -24,7 +24,7 @@ type CreateClassesParams struct {
 	Level        string
 	CategoryID   uuid.UUID
 	Image        string
-	LearningHour interface{}
+	LearningHour int64
 	CreatedBy    uuid.UUID
 }
 
@@ -131,7 +131,7 @@ type GetClassesCompletedRow struct {
 	Name         string
 	Level        string
 	CategoryID   uuid.UUID
-	LearningHour interface{}
+	LearningHour int64
 }
 
 func (q *Queries) GetClassesCompleted(ctx context.Context, userID uuid.UUID) (GetClassesCompletedRow, error) {
@@ -159,7 +159,7 @@ type GetClassesInprogressRow struct {
 	Name         string
 	Level        string
 	CategoryID   uuid.UUID
-	LearningHour interface{}
+	LearningHour int64
 }
 
 func (q *Queries) GetClassesInprogress(ctx context.Context, userID uuid.UUID) (GetClassesInprogressRow, error) {

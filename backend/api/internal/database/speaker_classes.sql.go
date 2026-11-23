@@ -17,7 +17,7 @@ const createSpeakerClass = `-- name: CreateSpeakerClass :one
 INSERT INTO speaker_classes (class_id, user_id, created_by)
       VALUES ($1, $2, $3)
 
-RETURNING id, class_id, user_id, created_by
+RETURNING id, class_id, user_id, created_at, created_by, updated_at, updated_by, deleted_at, deleted_by
 `
 
 type CreateSpeakerClassParams struct {
@@ -33,13 +33,18 @@ func (q *Queries) CreateSpeakerClass(ctx context.Context, arg CreateSpeakerClass
 		&i.ID,
 		&i.ClassID,
 		&i.UserID,
+		&i.CreatedAt,
 		&i.CreatedBy,
+		&i.UpdatedAt,
+		&i.UpdatedBy,
+		&i.DeletedAt,
+		&i.DeletedBy,
 	)
 	return i, err
 }
 
 const getSpeakerClasses = `-- name: GetSpeakerClasses :many
-SELECT sc.id, sc.class_id, sc.user_id, sc.created_by, u.name, u.phone_number FROM speaker_classes sc
+SELECT sc.id, sc.class_id, sc.user_id, sc.created_at, sc.created_by, sc.updated_at, sc.updated_by, sc.deleted_at, sc.deleted_by, u.name, u.phone_number FROM speaker_classes sc
             LEFT JOIN classes c ON c.id = sc.class_id
             LEFT JOIN users u ON u.id = sc.user_id
       WHERE sc.deleted_at is null AND c.deleted_at is null
@@ -49,7 +54,12 @@ type GetSpeakerClassesRow struct {
 	ID          uuid.UUID
 	ClassID     uuid.UUID
 	UserID      uuid.UUID
+	CreatedAt   sql.NullTime
 	CreatedBy   uuid.UUID
+	UpdatedAt   sql.NullTime
+	UpdatedBy   uuid.NullUUID
+	DeletedAt   sql.NullTime
+	DeletedBy   uuid.NullUUID
 	Name        sql.NullString
 	PhoneNumber sql.NullString
 }
@@ -67,7 +77,12 @@ func (q *Queries) GetSpeakerClasses(ctx context.Context) ([]GetSpeakerClassesRow
 			&i.ID,
 			&i.ClassID,
 			&i.UserID,
+			&i.CreatedAt,
 			&i.CreatedBy,
+			&i.UpdatedAt,
+			&i.UpdatedBy,
+			&i.DeletedAt,
+			&i.DeletedBy,
 			&i.Name,
 			&i.PhoneNumber,
 		); err != nil {

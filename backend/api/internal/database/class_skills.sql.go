@@ -17,7 +17,7 @@ const createClassSkill = `-- name: CreateClassSkill :one
 INSERT INTO class_skills (class_id, skill_id, point)
         VALUES ($1, $2, $3)
 
-RETURNING id, class_id, skill_id, point
+RETURNING id, class_id, skill_id, point, created_at, created_by, updated_at, updated_by, deleted_at, deleted_by
 `
 
 type CreateClassSkillParams struct {
@@ -34,6 +34,12 @@ func (q *Queries) CreateClassSkill(ctx context.Context, arg CreateClassSkillPara
 		&i.ClassID,
 		&i.SkillID,
 		&i.Point,
+		&i.CreatedAt,
+		&i.CreatedBy,
+		&i.UpdatedAt,
+		&i.UpdatedBy,
+		&i.DeletedAt,
+		&i.DeletedBy,
 	)
 	return i, err
 }

@@ -17,7 +17,7 @@ const createCertificate = `-- name: CreateCertificate :one
 INSERT INTO student_certificates (name, class_id, user_id, file_id)
         VALUES ($1, $2, $3, $4)
 
-RETURNING id, name, file_id, user_id, class_id
+RETURNING id, name, file_id, user_id, class_id, created_at, created_by, updated_at, updated_by, deleted_at, deleted_by
 `
 
 type CreateCertificateParams struct {
@@ -41,13 +41,19 @@ func (q *Queries) CreateCertificate(ctx context.Context, arg CreateCertificatePa
 		&i.FileID,
 		&i.UserID,
 		&i.ClassID,
+		&i.CreatedAt,
+		&i.CreatedBy,
+		&i.UpdatedAt,
+		&i.UpdatedBy,
+		&i.DeletedAt,
+		&i.DeletedBy,
 	)
 	return i, err
 }
 
 const getStudentCertificates = `-- name: GetStudentCertificates :many
 
-SELECT sc.id, sc.name, sc.file_id, sc.user_id, sc.class_id, c.name AS class_name, f.file_type, f.size AS file_size, f.file_url FROM student_certificates sc
+SELECT sc.id, sc.name, sc.file_id, sc.user_id, sc.class_id, sc.created_at, sc.created_by, sc.updated_at, sc.updated_by, sc.deleted_at, sc.deleted_by, c.name AS class_name, f.file_type, f.size AS file_size, f.file_url FROM student_certificates sc
         LEFT JOIN classes c ON c.id = sc.class_id
         LEFT JOIN files f ON f.id = sc.file_id
         WHERE sc.user_id = $1
@@ -59,9 +65,15 @@ type GetStudentCertificatesRow struct {
 	FileID    uuid.UUID
 	UserID    uuid.UUID
 	ClassID   uuid.UUID
+	CreatedAt sql.NullTime
+	CreatedBy uuid.UUID
+	UpdatedAt sql.NullTime
+	UpdatedBy uuid.NullUUID
+	DeletedAt sql.NullTime
+	DeletedBy uuid.NullUUID
 	ClassName sql.NullString
 	FileType  sql.NullString
-	FileSize  interface{}
+	FileSize  sql.NullInt64
 	FileUrl   sql.NullString
 }
 
@@ -80,6 +92,12 @@ func (q *Queries) GetStudentCertificates(ctx context.Context, userID uuid.UUID) 
 			&i.FileID,
 			&i.UserID,
 			&i.ClassID,
+			&i.CreatedAt,
+			&i.CreatedBy,
+			&i.UpdatedAt,
+			&i.UpdatedBy,
+			&i.DeletedAt,
+			&i.DeletedBy,
 			&i.ClassName,
 			&i.FileType,
 			&i.FileSize,

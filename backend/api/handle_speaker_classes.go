@@ -38,7 +38,43 @@ func (apiCnfg *apiConfig) handlerCreateSpeakerClass(w http.ResponseWriter, r *ht
 	respondWithJson(w, 200, databaseSpeakerClassToSpeakerClass(speaker_classes))
 }
 
-func (apiCnfg *apiConfig) handlerGetSpeakers(w http.ResponseWriter, r *http.Request){
+func (apiCnfg *apiConfig) handlerGetSpeakers(w http.ResponseWriter, r *http.Request, user database.User){
+
+	speakers, err := apiCnfg.DB.GetSpeakerClasses(r.Context())
+
+	if err != nil {
+		respondWithError(w, 400, fmt.Sprint("Error when get speaker :%v", err))
+		return
+	}
+
+	respondWithJson(w, 200, databaseSpeakerClassesToSpeakerClasses(speakers))
+}
+
+func (apiCnfg *apiConfig) handlerGetSpeakerClassDetail(w http.ResponseWriter, r *http.Request, user database.User){
+
+	speakers, err := apiCnfg.DB.GetSpeakerClasses(r.Context())
+
+	if err != nil {
+		respondWithError(w, 400, fmt.Sprint("Error when get speaker :%v", err))
+		return
+	}
+
+	respondWithJson(w, 200, databaseSpeakerClassesToSpeakerClasses(speakers))
+}
+
+func (apiCnfg *apiConfig) handlerUpdateSpeakerClass(w http.ResponseWriter, r *http.Request, user database.User){
+
+	speakers, err := apiCnfg.DB.GetSpeakerClasses(r.Context())
+
+	if err != nil {
+		respondWithError(w, 400, fmt.Sprint("Error when get speaker :%v", err))
+		return
+	}
+
+	respondWithJson(w, 200, databaseSpeakerClassesToSpeakerClasses(speakers))
+}
+
+func (apiCnfg *apiConfig) handlerDeleteSpeakerClass(w http.ResponseWriter, r *http.Request, user database.User){
 
 	speakers, err := apiCnfg.DB.GetSpeakerClasses(r.Context())
 

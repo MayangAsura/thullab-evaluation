@@ -3,13 +3,9 @@ package main
 import (
 	"fmt"
 	"encoding/json"
-	"time"
 	"net/http"
 
-	"github.com/google/uuid"
 	"github.com/MayangAsura/thullab-evaluation/internal/database"
-
-	// "internal/database"
 
 )
 
@@ -31,9 +27,6 @@ func (apiCnfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Reque
 	}
 
 	user, errUser := apiCnfg.DB.CreateUser(r.Context(), database.CreateUserParams{
-		ID: uuid.New(),
-		CreatedAt: time.Now().UTC(),
-		UpdatedAt: time.Now().UTC(),
 		Name: params.Name,
 		Password: params.Password,
 		CreatedBy: user.ID,

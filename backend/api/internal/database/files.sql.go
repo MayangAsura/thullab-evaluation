@@ -23,7 +23,7 @@ type CreateFilesParams struct {
 	Name     string
 	FileType string
 	FileUrl  string
-	Size     interface{}
+	Size     int64
 }
 
 func (q *Queries) CreateFiles(ctx context.Context, arg CreateFilesParams) (File, error) {

@@ -1,6 +1,6 @@
--- +goose upp
+-- +goose up
 
-ALTER TABLE users ADD COLUMN registrant_id UUID NOT NULL;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS registrant_id UUID NOT NULL;
 
 -- +goose down
 

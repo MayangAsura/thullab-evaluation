@@ -7,6 +7,7 @@ package database
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/google/uuid"
 )
@@ -22,7 +23,7 @@ RETURNING id, option, point, created_at, updated_at, deleted_at, created_by, del
 type CreateLearningOptionParams struct {
 	QuestionID uuid.UUID
 	Option     string
-	Point      interface{}
+	Point      sql.NullInt64
 }
 
 func (q *Queries) CreateLearningOption(ctx context.Context, arg CreateLearningOptionParams) (LearningOption, error) {

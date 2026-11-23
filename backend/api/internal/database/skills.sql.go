@@ -16,7 +16,7 @@ const createSkill = `-- name: CreateSkill :one
 INSERT INTO skills (name, created_by)
         VALUES ($1, $2)
 
-RETURNING id, name, created_at, created_by, deleted_at
+RETURNING id, name, created_at, created_by, updated_at, update_by, deleted_at, deleted_by
 `
 
 type CreateSkillParams struct {
@@ -32,14 +32,17 @@ func (q *Queries) CreateSkill(ctx context.Context, arg CreateSkillParams) (Skill
 		&i.Name,
 		&i.CreatedAt,
 		&i.CreatedBy,
+		&i.UpdatedAt,
+		&i.UpdateBy,
 		&i.DeletedAt,
+		&i.DeletedBy,
 	)
 	return i, err
 }
 
 const getSkillByID = `-- name: GetSkillByID :one
 
-SELECT id, name, created_at, created_by, deleted_at FROM skills
+SELECT id, name, created_at, created_by, updated_at, update_by, deleted_at, deleted_by FROM skills
         WHERE id = $1 AND deleted_at is null
 `
 
@@ -51,14 +54,17 @@ func (q *Queries) GetSkillByID(ctx context.Context, id uuid.UUID) (Skill, error)
 		&i.Name,
 		&i.CreatedAt,
 		&i.CreatedBy,
+		&i.UpdatedAt,
+		&i.UpdateBy,
 		&i.DeletedAt,
+		&i.DeletedBy,
 	)
 	return i, err
 }
 
 const getSkills = `-- name: GetSkills :many
 
-SELECT id, name, created_at, created_by, deleted_at FROM skills
+SELECT id, name, created_at, created_by, updated_at, update_by, deleted_at, deleted_by FROM skills
         WHERE deleted_at is null
 `
 
@@ -76,7 +82,10 @@ func (q *Queries) GetSkills(ctx context.Context) ([]Skill, error) {
 			&i.Name,
 			&i.CreatedAt,
 			&i.CreatedBy,
+			&i.UpdatedAt,
+			&i.UpdateBy,
 			&i.DeletedAt,
+			&i.DeletedBy,
 		); err != nil {
 			return nil, err
 		}

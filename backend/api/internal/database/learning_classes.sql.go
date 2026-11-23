@@ -8,7 +8,6 @@ package database
 import (
 	"context"
 	"database/sql"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -18,13 +17,13 @@ const createLearningClasses = `-- name: CreateLearningClasses :one
 INSERT INTO learning_classes ( learning_id, class_id, created_at, updated_at, deleted_at, created_by, updated_by, deleted_by)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 
-RETURNING id, learning_id, class_id, created_at, updated_at, deleted_at, created_by, updated_by, deleted_by
+RETURNING id, learning_id, class_id, created_at, created_by, updated_at, updated_by, deleted_at, deleted_by
 `
 
 type CreateLearningClassesParams struct {
 	LearningID uuid.UUID
 	ClassID    uuid.UUID
-	CreatedAt  time.Time
+	CreatedAt  sql.NullTime
 	UpdatedAt  sql.NullTime
 	DeletedAt  sql.NullTime
 	CreatedBy  uuid.UUID
@@ -49,10 +48,10 @@ func (q *Queries) CreateLearningClasses(ctx context.Context, arg CreateLearningC
 		&i.LearningID,
 		&i.ClassID,
 		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.DeletedAt,
 		&i.CreatedBy,
+		&i.UpdatedAt,
 		&i.UpdatedBy,
+		&i.DeletedAt,
 		&i.DeletedBy,
 	)
 	return i, err

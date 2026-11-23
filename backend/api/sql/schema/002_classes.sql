@@ -6,7 +6,7 @@ CREATE TABLE classes (
   level VARCHAR(200) NOT NULL,
   category_id UUID NOT NULL,
   image VARCHAR(200) NOT NULL,
-  learning_hour int64 NOT NULL DEFAULT 0,
+  learning_hour INT8 NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   created_by UUID NOT NULL,
   updated_at TIMESTAMPTZ,

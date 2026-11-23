@@ -16,7 +16,7 @@ const createLearningResponseDetail = `-- name: CreateLearningResponseDetail :one
 INSERT INTO learning_response_details (response_id, learning_id, user_id, class_id, question_id, answer, point)
       VALUES ($1, $2, $3, $4, $5, $6, $7)
 
-RETURNING id, learning_id, class_id, user_id, response_id, question_id, answer, point
+RETURNING id, learning_id, class_id, user_id, response_id, question_id, answer, point, created_at, created_by, updated_at, updated_by, deleted_at, deleted_by
 `
 
 type CreateLearningResponseDetailParams struct {
@@ -26,7 +26,7 @@ type CreateLearningResponseDetailParams struct {
 	ClassID    uuid.UUID
 	QuestionID uuid.UUID
 	Answer     string
-	Point      interface{}
+	Point      int64
 }
 
 func (q *Queries) CreateLearningResponseDetail(ctx context.Context, arg CreateLearningResponseDetailParams) (LearningResponseDetail, error) {
@@ -49,13 +49,19 @@ func (q *Queries) CreateLearningResponseDetail(ctx context.Context, arg CreateLe
 		&i.QuestionID,
 		&i.Answer,
 		&i.Point,
+		&i.CreatedAt,
+		&i.CreatedBy,
+		&i.UpdatedAt,
+		&i.UpdatedBy,
+		&i.DeletedAt,
+		&i.DeletedBy,
 	)
 	return i, err
 }
 
 const getLearningResponseDetailByResponseIDAndQuestionID = `-- name: GetLearningResponseDetailByResponseIDAndQuestionID :one
 
-SELECT id, learning_id, class_id, user_id, response_id, question_id, answer, point FROM learning_response_details lrd
+SELECT id, learning_id, class_id, user_id, response_id, question_id, answer, point, created_at, created_by, updated_at, updated_by, deleted_at, deleted_by FROM learning_response_details lrd
       WHERE lrd.response_id = $1 AND lrd.question_id = $2 AND lrd.deleted_at is null
 `
 
@@ -76,6 +82,12 @@ func (q *Queries) GetLearningResponseDetailByResponseIDAndQuestionID(ctx context
 		&i.QuestionID,
 		&i.Answer,
 		&i.Point,
+		&i.CreatedAt,
+		&i.CreatedBy,
+		&i.UpdatedAt,
+		&i.UpdatedBy,
+		&i.DeletedAt,
+		&i.DeletedBy,
 	)
 	return i, err
 }

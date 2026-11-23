@@ -7,7 +7,7 @@ INSERT INTO registrants (
   address,
   password
 )
-VALUES ( $1, $2, $3, $4, $5)
+VALUES ( $1, $2, $3, $4, $5 )
 
 RETURNING *;
 

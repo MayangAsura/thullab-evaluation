@@ -9,6 +9,8 @@ import (
 
 	"github.com/MayangAsura/thullab-evaluation/internal/database"
 
+	"github.com/MayangAsura/thullab-evaluation/internal/sqlnullint64util"
+
 )
 
 func (apiCnfg *apiConfig) handlerCreateLearningResponse(w http.ResponseWriter, r *http.Request, user database.User){
@@ -34,7 +36,7 @@ func (apiCnfg *apiConfig) handlerCreateLearningResponse(w http.ResponseWriter, r
 		LearningID: params.LearningID,
 		ClassID: params.ClassID,
 		UserID: user.ID,
-		TotalPoint: params.TotalPoint,
+		TotalPoint: sqlnullint64util.ToNullInt64(params.TotalPoint),
 	})
 
 	if err != nil {

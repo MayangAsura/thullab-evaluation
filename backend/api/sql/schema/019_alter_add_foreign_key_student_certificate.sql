@@ -9,6 +9,6 @@ ALTER TABLE IF EXISTS student_certificates
 CREATE INDEX IF NOT EXISTS fki_class_id_fkey
     ON student_certificates(class_id);
 
--- -- +goose down
+-- +goose down
 
 ALTER TABLE IF EXISTS student_certificates DROP CONSTRAINT class_id_fkey;

@@ -50,3 +50,45 @@ func (apiCnfg *apiConfig) handlerGetSkills(w http.ResponseWriter, r *http.Reques
 
 
 }
+
+func (apiCnfg *apiConfig) handlerGetSkillDetail(w http.ResponseWriter, r *http.Request, user database.User){
+
+	skills, err := apiCnfg.DB.GetSkills(r.Context())
+
+	if err != nil {
+		respondWithError(w, 400, fmt.Sprint("Error when get skills: %v", err))
+		return
+	}
+
+	respondWithJson(w, 200, skills)
+
+
+}
+
+func (apiCnfg *apiConfig) handlerUpdateSkill(w http.ResponseWriter, r *http.Request, user database.User){
+
+	skills, err := apiCnfg.DB.GetSkills(r.Context())
+
+	if err != nil {
+		respondWithError(w, 400, fmt.Sprint("Error when get skills: %v", err))
+		return
+	}
+
+	respondWithJson(w, 200, skills)
+
+
+}
+
+func (apiCnfg *apiConfig) handlerDeleteSkill(w http.ResponseWriter, r *http.Request, user database.User){
+
+	skills, err := apiCnfg.DB.GetSkills(r.Context())
+
+	if err != nil {
+		respondWithError(w, 400, fmt.Sprint("Error when get skills: %v", err))
+		return
+	}
+
+	respondWithJson(w, 200, skills)
+
+
+}

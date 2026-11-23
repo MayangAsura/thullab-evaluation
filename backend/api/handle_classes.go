@@ -12,7 +12,7 @@ import (
 
 )
 
-func (apiCnfg *apiConfig) handlerCreateClasses(w http.ResponseWriter, r *http.Request){
+func (apiCnfg *apiConfig) handlerCreateClasses(w http.ResponseWriter, r *http.Request, user database.User){
 
 	type skill struct {
 		ID uuid.UUID `json:"id"`
@@ -179,4 +179,14 @@ func (apiCnfg *apiConfig) handlerGetClassDetail(w http.ResponseWriter, r *http.R
 	}
 
 	respondWithJson(w, 200, databaseClassDetailToClassDetail(class, class_skills, speakers))
+}
+
+func (apiCnfg *apiConfig) handlerUpdateClass(w http.ResponseWriter, r *http.Request, user database.User){
+
+	return
+}
+
+func (apiCnfg *apiConfig) handlerDeleteClass(w http.ResponseWriter, r *http.Request, user database.User){
+
+	return
 }

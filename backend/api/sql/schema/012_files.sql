@@ -5,7 +5,7 @@ CREATE TABLE files (
   name VARCHAR(200) NOT NULL,
   file_type VARCHAR(200) NOT NULL,
   file_url VARCHAR(200) NOT NULL,
-  size int64 NOT NULL,
+  size INT8 NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   created_by UUID NOT NULL,
   updated_at TIMESTAMPTZ NULL,

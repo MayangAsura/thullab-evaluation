@@ -12,6 +12,9 @@ import (
 
 	"github.com/MayangAsura/thullab-evaluation/internal/database"
 
+	"github.com/MayangAsura/thullab-evaluation/internal/sqlnulltimeutil"
+	"github.com/MayangAsura/thullab-evaluation/internal/sqlnullstringutil"
+
 )
 
 func (apiCnfg *apiConfig) handleLogin(w http.ResponseWriter, r *http.Request){
@@ -66,6 +69,8 @@ func (apiCnfg *apiConfig) handleRegisterNewRegistrant(w http.ResponseWriter, r *
 	decoder := json.NewDecoder(r.Body)
 
 	params := parameters{}
+
+
 	err := decoder.Decode(&params)
 
 	if err != nil {
@@ -73,16 +78,37 @@ func (apiCnfg *apiConfig) handleRegisterNewRegistrant(w http.ResponseWriter, r *
 		return
 	}
 
+	fmt.Println("params", params.Name)
+
+	hashPassword, _ := HashPassword(params.Password)
+
 	registrant, errRegistrant := apiCnfg.DB.CreateRegistrant(r.Context(), database.CreateRegistrantParams{
 		Name: params.Name,
-		Password: params.Password,
 		PhoneNumber: params.PhoneNumber,
 		Email: params.Email,
 		Address: params.Address,
+		Password: hashPassword,
 	})
+
+	fmt.Println("registrant", registrant, errRegistrant)
 
 	if err != nil {
 		respondWithError(w, 400, fmt.Sprint("Couldn't create registrant: %s", errRegistrant))
+		return
+	}
+
+	_, errUser := apiCnfg.DB.CreateUser(r.Context(), database.CreateUserParams{
+		Name: params.Name,
+		PhoneNumber: params.PhoneNumber,
+		Email: params.Email,
+		Address: sqlnullstringutil.ToNullString(params.Address),
+		Password: hashPassword,
+		CreatedBy: registrant.ID,
+		RegistrantID: registrant.ID,
+	})
+
+	if (errUser != nil){
+		respondWithError(w, 400, fmt.Sprint("Error when create user: %v", errUser))
 		return
 	}
 
@@ -136,7 +162,7 @@ func (apiCnfg *apiConfig) ResetPassword(w http.ResponseWriter, r *http.Request, 
 	errUpdate := apiCnfg.DB.UpdateUserPassword(r.Context(), database.UpdateUserPasswordParams{
 		PhoneNumber: user.PhoneNumber,
 		Password: hash,
-		UpdatedAt: time.Now(),
+		UpdatedAt: sqlnulltimeutil.ToNullTime(time.Now()),
 	})
 
 	if errUpdate != nil {
@@ -178,7 +204,7 @@ func (apiCnfg *apiConfig) ForgotPassword(w http.ResponseWriter, r *http.Request)
 	errUpdate := apiCnfg.DB.UpdateUserPassword(r.Context(), database.UpdateUserPasswordParams{
 		PhoneNumber: params.Username,
 		Password: hash,
-		UpdatedAt: time.Now(),
+		UpdatedAt: sqlnulltimeutil.ToNullTime(time.Now()),
 	})
 
 	if errUpdate != nil {

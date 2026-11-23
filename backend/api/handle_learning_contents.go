@@ -17,11 +17,13 @@ import (
 
 	"github.com/MayangAsura/thullab-evaluation/internal/database"
 
+	"github.com/MayangAsura/thullab-evaluation/internal/sqlnullint64util"
+
 )
 
 
 
-func (apiCnfg *apiConfig) handlerCreateLearningContent(w http.ResponseWriter, r *http.Request){
+func (apiCnfg *apiConfig) handlerCreateLearningContent(w http.ResponseWriter, r *http.Request, user database.User){
 
 	type option struct {
 		Option string `json:"option"`
@@ -174,7 +176,7 @@ func (apiCnfg *apiConfig) handlerCreateLearningContent(w http.ResponseWriter, r 
 
 					_, err := apiCnfg.DB.CreateLearningOption(r.Context(), database.CreateLearningOptionParams{
 							Option: value.Option,
-							Point: value.Point,
+							Point: sqlnullint64util.ToNullInt64(value.Point),
 						})
 
 					// questions['options'] := append(questions['options'], option)
@@ -200,7 +202,7 @@ func (apiCnfg *apiConfig) handlerCreateLearningContent(w http.ResponseWriter, r 
 
 }
 
-func (apiCnfg *apiConfig) handleGetLearningContents(w http.ResponseWriter, r *http.Request, user database.User){
+func (apiCnfg *apiConfig) handlerGetLearningContents(w http.ResponseWriter, r *http.Request, user database.User){
 
 	learning_contents, err := apiCnfg.DB.GetLearningContents(r.Context())
 
@@ -213,7 +215,20 @@ func (apiCnfg *apiConfig) handleGetLearningContents(w http.ResponseWriter, r *ht
 	respondWithJson(w, 200, databaseLearningContentsToLearningContents(learning_contents))
 }
 
-func (apiCnfg *apiConfig) handleClassGetLearningContents(w http.ResponseWriter, r *http.Request, user database.User){
+func (apiCnfg *apiConfig) handlerUpdateLearningContent(w http.ResponseWriter, r *http.Request, user database.User){
+
+	learning_contents, err := apiCnfg.DB.GetLearningContents(r.Context())
+
+	if err != nil {
+		respondWithError(w, 400, fmt.Sprint("Couldn't get learning contents: %v", err))
+		return
+	}
+
+
+	respondWithJson(w, 200, databaseLearningContentsToLearningContents(learning_contents))
+}
+
+func (apiCnfg *apiConfig) handlerGetClassLearningContent(w http.ResponseWriter, r *http.Request, user database.User){
 
 	learning_contents, err := apiCnfg.DB.GetClassLearningContents(r.Context(), user.ID)
 
@@ -225,7 +240,7 @@ func (apiCnfg *apiConfig) handleClassGetLearningContents(w http.ResponseWriter, 
 	respondWithJson(w, 200, databaseLearningContentsToLearningContents(learning_contents))
 }
 
-func (apiCnfg *apiConfig) handleGetLearningContentDetail(w http.ResponseWriter, r *http.Request, user database.User){
+func (apiCnfg *apiConfig) handlerGetLearningContentDetail(w http.ResponseWriter, r *http.Request, user database.User){
 
 	learningIDStr := chi.URLParam(r, "learningID")
 	learningID, err := uuid.Parse(learningIDStr)
@@ -325,8 +340,19 @@ func (apiCnfg *apiConfig) GetLearningContentClass(w http.ResponseWriter, r *http
 }
 
 func (apiCnfg *apiConfig) StartLearningStudent(w http.ResponseWriter, r *http.Request, user database.User){
-	learningIDStr := chi.URLParam(r, "learningID")
-	learningID, err := uuid.Parse(learningIDStr)
+
+	// learningIDStr := chi.URLParam(r, "learningID")
+	// learningID, err := uuid.Parse(learningIDStr)
+
+	type parameters struct {
+		LearningID uuid.UUID `json:"learning_id"`
+	}
+
+	decoder := json.NewDecoder(r.Body)
+
+	params := parameters{}
+
+	err := decoder.Decode(&params)
 
 	if err != nil {
 		respondWithError(w, 400, fmt.Sprint("Error when parse learning id: %v", err))
@@ -335,7 +361,7 @@ func (apiCnfg *apiConfig) StartLearningStudent(w http.ResponseWriter, r *http.Re
 
 	learning_response, err := apiCnfg.DB.StartLearningContentResponse(r.Context(), database.StartLearningContentResponseParams{
 		UserID: user.ID,
-		LearningID: learningID,
+		LearningID: params.LearningID,
 	})
 
 	if err != nil {
@@ -349,8 +375,18 @@ func (apiCnfg *apiConfig) StartLearningStudent(w http.ResponseWriter, r *http.Re
 
 func (apiCnfg *apiConfig) ResumeLearningStudent(w http.ResponseWriter, r *http.Request, user database.User){
 
-	learningIDStr := chi.URLParam(r, "learningID")
-	learningID, err := uuid.Parse(learningIDStr)
+	// learningIDStr := chi.URLParam(r, "learningID")
+	// learningID, err := uuid.Parse(learningIDStr)
+
+	type parameters struct {
+		LearningID uuid.UUID `json:"learning_id"`
+	}
+
+	decoder := json.NewDecoder(r.Body)
+
+	params := parameters{}
+
+	err := decoder.Decode(&params)
 
 	if err != nil {
 		respondWithError(w, 400, fmt.Sprint("Error when parse learning ID: ", err))
@@ -358,7 +394,7 @@ func (apiCnfg *apiConfig) ResumeLearningStudent(w http.ResponseWriter, r *http.R
 	}
 
 	err_resume := apiCnfg.DB.ResumeLearningContentResponse(r.Context(), database.ResumeLearningContentResponseParams{
-		LearningID: learningID,
+		LearningID: params.LearningID,
 		UserID: user.ID,
 	})
 
@@ -371,10 +407,20 @@ func (apiCnfg *apiConfig) ResumeLearningStudent(w http.ResponseWriter, r *http.R
 
 }
 
-func (apiCnfg *apiConfig) CompleteLearningContent(w http.ResponseWriter, r *http.Request, user database.User){
+func (apiCnfg *apiConfig) CompleteOneLearningStudent(w http.ResponseWriter, r *http.Request, user database.User){
 
-	learningIDStr := chi.URLParam(r, "learningID")
-	learningID, err := uuid.Parse(learningIDStr)
+	// learningIDStr := chi.URLParam(r, "learningID")
+	// learningID, err := uuid.Parse(learningIDStr)
+
+	type parameters struct {
+		LearningID uuid.UUID `json:"learning_id"`
+	}
+
+	decoder := json.NewDecoder(r.Body)
+
+	params := parameters{}
+
+	err := decoder.Decode(&params)
 
 	if err != nil {
 		respondWithError(w, 400, fmt.Sprint("Error when parse learning id: %v", err))
@@ -382,7 +428,7 @@ func (apiCnfg *apiConfig) CompleteLearningContent(w http.ResponseWriter, r *http
 	}
 
 	err_complete := apiCnfg.DB.CompleteLearningContentResponse(r.Context(), database.CompleteLearningContentResponseParams{
-		LearningID: learningID,
+		LearningID: params.LearningID,
 		UserID: user.ID,
 	})
 
@@ -571,7 +617,7 @@ func (apiCnfg *apiConfig) SaveLearningContentEvaluation(w http.ResponseWriter, r
 	// Update the main response with total points
 	err = apiCnfg.DB.UpdateLearningResponse(r.Context(), database.UpdateLearningResponseParams{
 		ID:         learning_response.ID,
-		TotalPoint: totalPoints,
+		TotalPoint: sqlnullint64util.ToNullInt64(totalPoints),
 		FinishedAt: sql.NullTime{Time: time.Now(), Valid: true},
 		UpdatedAt:  sql.NullTime{Time: time.Now(), Valid: true},
 	})
@@ -586,21 +632,10 @@ func (apiCnfg *apiConfig) SaveLearningContentEvaluation(w http.ResponseWriter, r
 	})
 }
 
-// Helper: safely convert interface{} to int64
-// func toInt64(v interface{}) int64 {
-// 	switch val := v.(type) {
-// 	case int64:
-// 		return val
-// 	case int32:
-// 		return int64(val)
-// 	case int:
-// 		return int64(val)
-// 	case float64:
-// 		return int64(val)
-// 	default:
-// 		return 0
-// 	}
-// }
+func (apiCnfg *apiConfig) handlerDeleteLearningContent(w http.ResponseWriter, r *http.Request, user database.User){
+
+	return
+}
 
 func splitAndTrim(s string) []string {
 	parts := strings.Split(s, ",")

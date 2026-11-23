@@ -24,7 +24,7 @@ RETURNING id, class_id, learning_id, question_order, question, question_type, an
 type CreateLearningQuestionParams struct {
 	ClassID       uuid.UUID
 	LearningID    uuid.UUID
-	QuestionOrder interface{}
+	QuestionOrder int64
 	Question      string
 	QuestionType  string
 	Answer        string
@@ -84,11 +84,11 @@ type GetLearningQuestionsByLearningContentRow struct {
 	ID            uuid.UUID
 	ClassID       uuid.UUID
 	LearningID    uuid.UUID
-	QuestionOrder interface{}
+	QuestionOrder int64
 	Question      string
 	QuestionType  string
 	Answer        string
-	Score         interface{}
+	Score         int64
 	CreatedAt     time.Time
 	UpdatedAt     sql.NullTime
 	DeletedAt     sql.NullTime
@@ -97,7 +97,7 @@ type GetLearningQuestionsByLearningContentRow struct {
 	DeletedBy     uuid.NullUUID
 	ID_2          uuid.NullUUID
 	Option        sql.NullString
-	Point         interface{}
+	Point         sql.NullInt64
 	CreatedAt_2   sql.NullTime
 	UpdatedAt_2   sql.NullTime
 	DeletedAt_2   sql.NullTime

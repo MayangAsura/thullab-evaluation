@@ -48,6 +48,8 @@ func (apiCnfg *apiConfig) handlerCreateLearningQuestion(w http.ResponseWriter, r
 	respondWithJson(w, 200, learning_questions)
 }
 
-func (apiCnfg *apiConfig) handleGetLearningQuestionDetail(w http.ResponseWriter, r *http.Request){
+func (apiCnfg *apiConfig) handlerGetLearningQuestionDetail(w http.ResponseWriter, r *http.Request){
+
+	return
 
 }

@@ -11,7 +11,7 @@ import (
 
 )
 
-func (apiCnfg *apiConfig) handlerCreateRegistrants(w http.ResponseWriter, r *http.Request, user database.User){
+func (apiCnfg *apiConfig) handlerCreateRegistrant(w http.ResponseWriter, r *http.Request, user database.User){
 
 	type parameters struct {
 		Name string `json:"name"`
@@ -24,7 +24,11 @@ func (apiCnfg *apiConfig) handlerCreateRegistrants(w http.ResponseWriter, r *htt
 	decoder := json.NewDecoder(r.Body)
 
 	params := parameters{}
+
+	fmt.Println("params:", params)
+
 	err := decoder.Decode(&params)
+
 
 	if err != nil {
 		respondWithError(w, 400, fmt.Sprint("Error when parsing json: %s", err))
@@ -48,21 +52,34 @@ func (apiCnfg *apiConfig) handlerCreateRegistrants(w http.ResponseWriter, r *htt
 	respondWithJson(w, 200, registrant)
 }
 
-// func (apiCnfg *apiConfig) handlerGetRegistrant(w http.ResponseWriter, r *http.Request, user database.User){
+func (apiCnfg *apiConfig) handlerGetRegistrantDetail(w http.ResponseWriter, r *http.Request, user database.User){
 
 
-// 	respondWithJson(w, 200, databaseRegistrantToUser(user))
+	// respondWithJson(w, 200, databaseRegistrantToUser(user))
+	return
 
-// }
+}
 
-// func (apiCnfg *apiConfig) handlerGetRegistrants(w http.ResponseWriter, r *http.Request, user database.User){
+func (apiCnfg *apiConfig) handlerGetRegistrants(w http.ResponseWriter, r *http.Request, user database.User){
 
-// 	registrants, err := apiCnfg.DB.GetRegistrants(r.Context())
+	// registrants, err := apiCnfg.DB.GetRegistrants(r.Context())
 
-// 	if err != nil {
-// 		respondWithError(w, 400, fmt.Sprint("Error when get registrants: %v", err))
-// 		return
+	// if err != nil {
+	// 	respondWithError(w, 400, fmt.Sprint("Error when get registrants: %v", err))
+	// 	return
 
-// 	}
-// 	respondWithJson(w, 200, databaseGetRegistrantsRowsToRegistrants(registrants))
-// }
+	// }
+	// respondWithJson(w, 200, databaseGetRegistrantsRowsToRegistrants(registrants))
+
+	return
+}
+
+func (apiCnfg *apiConfig) handlerUpdateRegistrant(w http.ResponseWriter, r *http.Request, user database.User){
+
+	return
+}
+
+func (apiCnfg *apiConfig) handlerDeleteRegistrant(w http.ResponseWriter, r *http.Request, user database.User){
+
+	return
+}

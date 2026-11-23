@@ -6,9 +6,12 @@ CREATE TABLE registrants (
   phone_number VARCHAR(200) NOT NULL,
   email VARCHAR(200) NOT NULL,
   address VARCHAR(200) NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NULL,
-  deleted_at TIMESTAMPTZ NULL
+  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+  created_by UUID NOT NULL,
+  updated_at TIMESTAMPTZ,
+  updated_by UUID NULL,
+  deleted_at TIMESTAMPTZ NULL,
+  deleted_by UUID NULL
 );
 
 -- +goose down

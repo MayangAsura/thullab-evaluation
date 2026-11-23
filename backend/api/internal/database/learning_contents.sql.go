@@ -185,7 +185,7 @@ func (q *Queries) GetLearningContentByID(ctx context.Context, id uuid.UUID) ([]L
 
 const getLearningContentStudentResponse = `-- name: GetLearningContentStudentResponse :many
 
-SELECT lc.id, name, content_type, level, learning_hour, duration, num_questions, is_random_questions, is_random_answers, question_types, status, created_at, lc.updated_at, deleted_at, created_by, updated_by, deleted_by, max_points, lr.id, learning_id, class_id, user_id, total_point, finished_at, lr.updated_at FROM learning_contents lc
+SELECT lc.id, name, content_type, level, learning_hour, duration, num_questions, is_random_questions, is_random_answers, question_types, status, lc.created_at, lc.updated_at, lc.deleted_at, lc.created_by, lc.updated_by, lc.deleted_by, max_points, lr.id, learning_id, class_id, user_id, total_point, finished_at, lr.created_at, lr.created_by, lr.updated_at, lr.updated_by, lr.deleted_at, lr.deleted_by FROM learning_contents lc
       LEFT JOIN learning_responses lr ON lc.id = lr.learning_id
       WHERE lr.user_id = $1 AND lr.id = $2 AND lr.deleted_at is null AND lc.deleted_at is null
 `
@@ -218,9 +218,14 @@ type GetLearningContentStudentResponseRow struct {
 	LearningID        uuid.NullUUID
 	ClassID           uuid.NullUUID
 	UserID            uuid.NullUUID
-	TotalPoint        interface{}
+	TotalPoint        sql.NullInt64
 	FinishedAt        sql.NullTime
+	CreatedAt_2       sql.NullTime
+	CreatedBy_2       uuid.NullUUID
 	UpdatedAt_2       sql.NullTime
+	UpdatedBy_2       uuid.NullUUID
+	DeletedAt_2       sql.NullTime
+	DeletedBy_2       uuid.NullUUID
 }
 
 func (q *Queries) GetLearningContentStudentResponse(ctx context.Context, arg GetLearningContentStudentResponseParams) ([]GetLearningContentStudentResponseRow, error) {
@@ -257,7 +262,12 @@ func (q *Queries) GetLearningContentStudentResponse(ctx context.Context, arg Get
 			&i.UserID,
 			&i.TotalPoint,
 			&i.FinishedAt,
+			&i.CreatedAt_2,
+			&i.CreatedBy_2,
 			&i.UpdatedAt_2,
+			&i.UpdatedBy_2,
+			&i.DeletedAt_2,
+			&i.DeletedBy_2,
 		); err != nil {
 			return nil, err
 		}

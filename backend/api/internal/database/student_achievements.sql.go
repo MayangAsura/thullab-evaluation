@@ -17,7 +17,7 @@ const createStudentAchievement = `-- name: CreateStudentAchievement :one
 INSERT INTO student_achievements (user_id, class_id, skill_id, point)
       VALUES ($1, $2, $3, $4)
 
-RETURNING id, user_id, class_id, skill_id, point
+RETURNING id, user_id, class_id, skill_id, point, created_at, created_by, updated_at, updated_by, deleted_at, deleted_by
 `
 
 type CreateStudentAchievementParams struct {
@@ -41,13 +41,19 @@ func (q *Queries) CreateStudentAchievement(ctx context.Context, arg CreateStuden
 		&i.ClassID,
 		&i.SkillID,
 		&i.Point,
+		&i.CreatedAt,
+		&i.CreatedBy,
+		&i.UpdatedAt,
+		&i.UpdatedBy,
+		&i.DeletedAt,
+		&i.DeletedBy,
 	)
 	return i, err
 }
 
 const getStudentAchievements = `-- name: GetStudentAchievements :many
 
-SELECT sa.id, sa.user_id, sa.class_id, sa.skill_id, sa.point, c.name AS class_name, s.name AS skill_name FROM student_achievements sa
+SELECT sa.id, sa.user_id, sa.class_id, sa.skill_id, sa.point, sa.created_at, sa.created_by, sa.updated_at, sa.updated_by, sa.deleted_at, sa.deleted_by, c.name AS class_name, s.name AS skill_name FROM student_achievements sa
             LEFT JOIN skills s ON s.id = sa.skill_id
             LEFT JOIN classes c ON c.id = sa.class_id
             WHERE sa.user_id = $1 AND sa.deleted_at is null
@@ -60,6 +66,12 @@ type GetStudentAchievementsRow struct {
 	ClassID   uuid.UUID
 	SkillID   uuid.UUID
 	Point     int64
+	CreatedAt sql.NullTime
+	CreatedBy uuid.UUID
+	UpdatedAt sql.NullTime
+	UpdatedBy uuid.NullUUID
+	DeletedAt sql.NullTime
+	DeletedBy uuid.NullUUID
 	ClassName sql.NullString
 	SkillName sql.NullString
 }
@@ -79,6 +91,12 @@ func (q *Queries) GetStudentAchievements(ctx context.Context, userID uuid.UUID) 
 			&i.ClassID,
 			&i.SkillID,
 			&i.Point,
+			&i.CreatedAt,
+			&i.CreatedBy,
+			&i.UpdatedAt,
+			&i.UpdatedBy,
+			&i.DeletedAt,
+			&i.DeletedBy,
 			&i.ClassName,
 			&i.SkillName,
 		); err != nil {
